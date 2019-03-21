@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ranking view test page</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+	<!-- <script type="text/javascript" src="Chart.min.js"></script> -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+</head>
+<body>
+<div class="head">
+	<h1>Ranking view</h1>
+</div>
+<div>
+	<div class="theater">Theater:</div>
+	<div class="tour">Tour:</div>
+	<div class="now">Now:</div>
+	<div class="opt">Opt: <button id="now">按当前活动时间展示</button></div>
+</div>
+
+<div>
+	<canvas id="myChart"></canvas>
+</div>
+
+
+<script type="text/javascript">
+	var now_eid = "78";
+	var now_compare_eidlist = [now_eid];
+	var compare_dataset = {};
+	var compare_labels = {};
+	var now_flag = 0;
+
+	function dictlen(dict) {
+		var i = 0;
+		for (var tmp in dict){
+			i++;
+		}
+		return i;
+	}
+
+	var getRandomColor = function(){
+	  return  '#' +
+	    (function(color){
+	    return (color +=  '0123456789abcdef'[Math.floor(Math.random()*16)])
+	      && (color.length == 6) ?  color : arguments.callee(color);
+	  })('');
+	}
+
+	function id2name(eid){
+		// $('button#'+eid)
+		return $('button#'+eid).text();
+	}
+
+	function remove_data(eid){
+		delete(compare_dataset[eid]);
+		config.data.datasets = [];
+		now_compare_eidlist.splice(now_compare_eidlist.indexOf(eid),1)
+		
+		for (var tmpid in compare_dataset){
+			// console.log(datas);
+			config.data.datasets.push(compare_dataset[tmpid]);
+		}
+		// 维护label
+		delete(compare_labels[eid]);
+		if (dictlen(compare_labels) > 0) {
+			var max_len = -100;
+			var max_id = -100;
+			for (var tmpid in compare_labels){
+				tmplen = compare_labels[tmpid].length
+				if (tmplen>max_len) {
+					max_len = tmplen;
+					max_id = tmpid;
+				}
+			}
+			max_label_list = compare_labels[max_id];
+		}
+		else
+		{
+			max_label_list = [];
+		}
+		config.data.labels = max_label_list;
+		window.myLine.update();
+	}
+
+	function add_data(eid){
+		$.get("./data/"+eid+".json", function(data){
+			new_time_len = data.data.logs.length;
+			label_list = [];
+			data_list = [];
+			for (var i = 0; i < new_time_len; i++) {
+				label_list.push(data.data.logs[i].datetime.slice(11,16));
+				data_list.push(data.data.logs[i].borders[2500]);
+			}
+			if (new_time_len > config.data.labels.length || dictlen(compare_dataset)==0) {
+				config.data.labels = label_list;
+			}
+			newColor = getRandomColor();
+			dataset = {
+				backgroundColor: newColor,
+				fill: false,
+				borderColor: newColor,
+				label: id2name(eid),
+				data: data_list
+			};
+			compare_labels[eid] = label_list;
+			compare_dataset[eid] = dataset;
+			config.data.datasets.push(dataset);
+			now_compare_eidlist.push(eid);
+			window.myLine.update();
+		})
+	}
+
+	$("#now").click(function(){
+		config.data.labels = compare_labels[now_eid];
+		length = compare_labels[now_eid].length;
+		now_flag = 1;
+		for (var tmpid in compare_labels){
+			compare_labels[tmpid].splice(length);
+		}
+		config.data.datasets.forEach(function(dataset) {
+				dataset.data.splice(length)
+			});
+		window.myLine.update();
+	})
+
+	$.get("events.json",function(data){
+		console.log(data);
+		for (var ind in data['tour']){
+			// console.log(ind+"----"+data['tour'][ind])
+			if (ind != now_eid) {
+				$(".tour").append(" <button id='"+ ind +"'>"+data['tour'][ind]+"</button>");
+			}
+			else {
+				$(".now").append(" <button id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['tour'][ind]+"</button>");
+			}
+		}
+		for (var ind in data['theater']){
+			if (ind!=now_eid) {
+				$(".theater").append(" <button id='"+ ind +"'>"+data['theater'][ind]+"</button>");
+			}	
+			else {
+				$(".now").append(" <button id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
+			}
+		}
+
+		$("button").click(function(){
+			if (this.id!="now") {
+				if (now_compare_eidlist.indexOf(this.id)==-1) {
+					add_data(this.id);
+					$(this).css('color', '#5abfb7')
+					// #5abfb7
+				}
+				else{
+					remove_data(this.id);
+					$(this).css('color', '#000000')
+				}
+			}
+		})
+	})
+
+	var config = {
+		    type: 'line',
+		    data: {
+		    },
+		    options: {
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+		    }
+		}
+
+	window.onload = function() {
+		
+		$.get("./data/"+now_eid+".json", function(data){
+			var ctx = document.getElementById('myChart').getContext('2d');
+			console.log(data);
+			time_len = data.data.logs.length;
+			label_list = [];
+			data_list = [];
+			for (var i = 0; i < time_len; i++) {
+				label_list.push(data.data.logs[i].datetime.slice(11,16));
+				data_list.push(data.data.logs[i].borders[2500]);
+			}
+			dataset = {
+				fill: false,
+				label: id2name(now_eid),
+				data: data_list
+			};
+			compare_labels[now_eid] = label_list;
+			compare_dataset[now_eid] = dataset;
+			config.data.labels = label_list;
+			config.data.datasets = [dataset];
+			window.myLine = new Chart(ctx, config);
+			// console.log('???');
+		})
+		
+	};
+</script>
+</body>
+</html>
