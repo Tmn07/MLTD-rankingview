@@ -61,7 +61,7 @@ def get_eventname():
         json.dump(data ,f)
 
 # 下载数据
-# map(get_data, nums)
+map(get_data, nums)
 # map(get_data, map(str,range(4,78)))
 
 # 比对数据
@@ -70,4 +70,4 @@ def get_eventname():
 # write_csv(['72', '68', '56'],'2500', 'w')
 # write_csv(['27'],'2000', 'a')
 
-get_eventname()
+# get_eventname()

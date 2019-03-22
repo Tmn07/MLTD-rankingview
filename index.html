@@ -12,10 +12,19 @@
 	<h1>Ranking view</h1>
 </div>
 <div>
-	<div class="theater">Theater:</div>
-	<div class="tour">Tour:</div>
-	<div class="now">Now:</div>
-	<div class="opt">Opt: <button id="now">按当前活动时间展示</button></div>
+	<div id="pst">
+		<div class="theater">Theater:</div>
+		<div class="tour">Tour:</div>
+		<div class="now">Now:</div>
+	</div>
+	<div class="opt">Opt: 
+		<button id="now">按当前活动时间展示</button>
+		<!-- <button id="last3">最后三天</button> -->
+		<button id="alltime" style="color: #5abfb7">按完整时间展示</button>
+		<button id="zero">0档</button>
+		<button id="one" style="color: #5abfb7">1档</button>
+		<button id="clear">清除</button>
+	</div>
 </div>
 
 <div>
@@ -25,10 +34,21 @@
 
 <script type="text/javascript">
 	var now_eid = "78";
+	// 当前比较的id
 	var now_compare_eidlist = [now_eid];
+	// id对应的0档1档原始数据
+	var now_compare_data = {};
+	var now_compare_label = {};
+	// 上下两个之间的赋值啥的，注意要深拷贝
+	// 当前数据构造好的dataset 用于给config传参
 	var compare_dataset = {};
+	// 当前数据构造好的labels 用于给config传参
 	var compare_labels = {};
+
 	var now_flag = 0;
+	var alltime_flag = 1;
+	var zero_flag = 0;
+	var one_flag = 1;
 
 	function dictlen(dict) {
 		var i = 0;
@@ -46,9 +66,54 @@
 	  })('');
 	}
 
+	function findmaxlen_label(compare_labels){
+		if (dictlen(compare_labels)==0){
+			return [];
+		}
+		var max_len = -100;
+		var max_id = -100;
+		for (var tmpid in compare_labels){
+			tmplen = compare_labels[tmpid].length
+			if (tmplen>max_len) {
+				max_len = tmplen;
+				max_id = tmpid;
+			}
+		}
+		max_label_list = compare_labels[max_id];
+		return max_label_list;
+	}
+
 	function id2name(eid){
 		// $('button#'+eid)
 		return $('button#'+eid).text();
+	}
+
+	function change2one(){
+		one_flag = 1;
+		zero_flag = 0;
+		nowlen = config.data.labels.length;
+		// console.log(nowlen);
+		config.data.datasets = []
+		for (var i=0; i<now_compare_eidlist.length; i++) {
+			tmpid = now_compare_eidlist[i];
+			compare_dataset[tmpid].data = now_compare_data[tmpid].data2500.slice(0,nowlen);
+			config.data.datasets.push(compare_dataset[tmpid]);
+		}
+		window.myLine.update();
+	}
+
+	function change2zero(){
+		one_flag = 0;
+		zero_flag = 1;
+		nowlen = config.data.labels.length;
+		// console.log(nowlen);
+		config.data.datasets = []
+		for (var i=0; i<now_compare_eidlist.length; i++) {
+			tmpid = now_compare_eidlist[i];
+			compare_dataset[tmpid].data = now_compare_data[tmpid].data100.slice(0,nowlen);
+			config.data.datasets.push(compare_dataset[tmpid]);
+		}
+		window.myLine.update();
 	}
 
 	function remove_data(eid){
@@ -62,23 +127,11 @@
 		}
 		// 维护label
 		delete(compare_labels[eid]);
-		if (dictlen(compare_labels) > 0) {
-			var max_len = -100;
-			var max_id = -100;
-			for (var tmpid in compare_labels){
-				tmplen = compare_labels[tmpid].length
-				if (tmplen>max_len) {
-					max_len = tmplen;
-					max_id = tmpid;
-				}
-			}
-			max_label_list = compare_labels[max_id];
+		if (alltime_flag==1) {
+			max_label_list = findmaxlen_label(compare_labels);
+			config.data.labels = max_label_list;
 		}
-		else
-		{
-			max_label_list = [];
-		}
-		config.data.labels = max_label_list;
+
 		window.myLine.update();
 	}
 
@@ -87,20 +140,50 @@
 			new_time_len = data.data.logs.length;
 			label_list = [];
 			data_list = [];
+			data100_list = [];
 			for (var i = 0; i < new_time_len; i++) {
 				label_list.push(data.data.logs[i].datetime.slice(11,16));
-				data_list.push(data.data.logs[i].borders[2500]);
+				if (eid >= 33) {
+					data_list.push(data.data.logs[i].borders[2500]);
+				}
+				else{
+					data_list.push(data.data.logs[i].borders[2000]);
+				}
+				if (eid>10) {
+					data100_list.push(data.data.logs[i].borders[100]);
+				}
 			}
-			if (new_time_len > config.data.labels.length || dictlen(compare_dataset)==0) {
-				config.data.labels = label_list;
+			now_compare_label[eid] = label_list.slice(0);
+			now_compare_data[eid] = {
+				data2500: data_list.slice(0),
+				data100: data100_list.slice(0)
 			}
 			newColor = getRandomColor();
+			if (zero_flag==1) {
+				data_flag_list = data100_list;
+			}
+			else{
+				data_flag_list = data_list;
+			}
+			if (now_flag) {
+				nowlen = config.data.labels.length;
+				// console.log(nowlen);
+				data_flag_list = data_flag_list.slice(0,nowlen);
+				label_list = label_list.slice(0,nowlen);
+			}
+			else{
+				if (new_time_len > config.data.labels.length || dictlen(compare_dataset)==0) {
+					config.data.labels = label_list;
+				}
+			}
+			
 			dataset = {
+				eid: eid,
 				backgroundColor: newColor,
 				fill: false,
 				borderColor: newColor,
 				label: id2name(eid),
-				data: data_list
+				data: data_flag_list
 			};
 			compare_labels[eid] = label_list;
 			compare_dataset[eid] = dataset;
@@ -110,10 +193,76 @@
 		})
 	}
 
+
+
+	$("#clear").click(function(){
+		now_compare_eidlist = [];
+		compare_dataset = {};
+		compare_labels = {};
+		config.data.datasets = [];
+		config.data.label = [];
+		$("#pst button").each(function(){
+			$(this).css('color', '#000000');
+		})
+		window.myLine.update();
+	})
+
+	$("#zero").click(function(){
+		change2zero();
+		$(this).css('color', '#5abfb7')
+		$("#one").css('color', '#000000')
+	})
+
+	$("#one").click(function(){
+		change2one();
+		$(this).css('color', '#5abfb7')
+		$("#zero").css('color', '#000000')
+	})
+	// $("#last3").click(function(){
+	// 	len = 24*2*3;
+	// 	config.data.datasets.forEach(function(dataset) {
+	// 			dataset.data.splice(0, dataset.data.length-len)
+	// 		});
+	// 	config.data.labels.splice(0, config.data.labels.length-len);
+	// 	window.myLine.update();
+	// })
+	$("#alltime").click(function(){
+		$(this).css('color', '#5abfb7');
+		$("#now").css('color', '#000000');
+		now_flag = 0;
+		alltime_flag = 1;
+
+		max_label_list = findmaxlen_label(now_compare_label);
+		config.data.labels = max_label_list;
+		for(var tmpid in compare_labels){
+			compare_labels[tmpid] = now_compare_label[tmpid].slice();
+		}
+		// compare_labels = now_compare_label;
+		for(var tmpid in compare_dataset) {
+			if (zero_flag) {
+				compare_dataset[tmpid].data = now_compare_data[tmpid].data100.slice(0);
+			}
+			else{
+				compare_dataset[tmpid].data = now_compare_data[tmpid].data2500.slice(0);
+			}			
+		}
+
+		config.data.datasets.forEach(function(dataset) {
+				dataset.data = compare_dataset[dataset.eid].data;
+			});		
+		window.myLine.update();
+
+		// config label 修改，data修改
+		// compare_labels
+	})
+
 	$("#now").click(function(){
-		config.data.labels = compare_labels[now_eid];
-		length = compare_labels[now_eid].length;
+		$(this).css('color', '#5abfb7');
+		$("#alltime").css('color', '#000000');
+ 		config.data.labels = now_compare_label[now_eid];
+		length = now_compare_label[now_eid].length;
 		now_flag = 1;
+		alltime_flag = 0;
 		for (var tmpid in compare_labels){
 			compare_labels[tmpid].splice(length);
 		}
@@ -124,7 +273,7 @@
 	})
 
 	$.get("events.json",function(data){
-		console.log(data);
+		// console.log(data);
 		for (var ind in data['tour']){
 			// console.log(ind+"----"+data['tour'][ind])
 			if (ind != now_eid) {
@@ -142,18 +291,15 @@
 				$(".now").append(" <button id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
 			}
 		}
-
-		$("button").click(function(){
-			if (this.id!="now") {
-				if (now_compare_eidlist.indexOf(this.id)==-1) {
-					add_data(this.id);
-					$(this).css('color', '#5abfb7')
-					// #5abfb7
-				}
-				else{
-					remove_data(this.id);
-					$(this).css('color', '#000000')
-				}
+		$("#pst button").click(function(){
+			if (now_compare_eidlist.indexOf(this.id)==-1) {
+				add_data(this.id);
+				$(this).css('color', '#5abfb7')
+				// #5abfb7
+			}
+			else{
+				remove_data(this.id);
+				$(this).css('color', '#000000')
 			}
 		})
 	})
@@ -178,15 +324,23 @@
 		
 		$.get("./data/"+now_eid+".json", function(data){
 			var ctx = document.getElementById('myChart').getContext('2d');
-			console.log(data);
+			// console.log(data);
 			time_len = data.data.logs.length;
 			label_list = [];
 			data_list = [];
+			data100_list = [];
 			for (var i = 0; i < time_len; i++) {
 				label_list.push(data.data.logs[i].datetime.slice(11,16));
 				data_list.push(data.data.logs[i].borders[2500]);
+				data100_list.push(data.data.logs[i].borders[100]);
+			}
+			now_compare_label[now_eid] = label_list.slice(0);
+			now_compare_data[now_eid] = {
+				data2500: data_list.slice(0),
+				data100: data100_list.slice(0)
 			}
 			dataset = {
+				eid: now_eid,
 				fill: false,
 				label: id2name(now_eid),
 				data: data_list
