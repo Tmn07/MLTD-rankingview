@@ -232,11 +232,11 @@
 		now_flag = 0;
 		alltime_flag = 1;
 
-		max_label_list = findmaxlen_label(now_compare_label);
-		config.data.labels = max_label_list;
 		for(var tmpid in compare_labels){
 			compare_labels[tmpid] = now_compare_label[tmpid].slice();
 		}
+		max_label_list = findmaxlen_label(compare_labels);
+		config.data.labels = max_label_list;
 		// compare_labels = now_compare_label;
 		for(var tmpid in compare_dataset) {
 			if (zero_flag) {
