@@ -3,9 +3,16 @@
 <head>
 	<title>ranking view test page</title>
 	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="./buttons-min.css">
 	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 	<!-- <script type="text/javascript" src="Chart.min.js"></script> -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+	<style type="text/css">
+		.pure-button {
+			margin: 1px;
+			font-size: 80%;
+		}
+	</style>
 </head>
 <body>
 <div class="head">
@@ -18,12 +25,12 @@
 		<div class="now">Now:</div>
 	</div>
 	<div class="opt">Opt: 
-		<button id="now">按当前活动时间展示</button>
+		<button class="pure-button" id="now">按当前活动时间展示</button>
 		<!-- <button id="last3">最后三天</button> -->
-		<button id="alltime" style="color: #5abfb7">按完整时间展示</button>
-		<button id="zero">0档</button>
-		<button id="one" style="color: #5abfb7">1档</button>
-		<button id="clear">清除</button>
+		<button class="pure-button" id="alltime" style="color: #5abfb7">按完整时间展示</button>
+		<button class="pure-button" id="zero">0档</button>
+		<button class="pure-button" id="one" style="color: #5abfb7">1档</button>
+		<button class="pure-button" id="clear">清除</button>
 	</div>
 </div>
 
@@ -277,18 +284,18 @@
 		for (var ind in data['tour']){
 			// console.log(ind+"----"+data['tour'][ind])
 			if (ind != now_eid) {
-				$(".tour").append(" <button id='"+ ind +"'>"+data['tour'][ind]+"</button>");
+				$(".tour").append(" <button class='pure-button' id='"+ ind +"'>"+data['tour'][ind]+"</button>");
 			}
 			else {
-				$(".now").append(" <button id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['tour'][ind]+"</button>");
+				$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['tour'][ind]+"</button>");
 			}
 		}
 		for (var ind in data['theater']){
 			if (ind!=now_eid) {
-				$(".theater").append(" <button id='"+ ind +"'>"+data['theater'][ind]+"</button>");
+				$(".theater").append(" <button class='pure-button' id='"+ ind +"'>"+data['theater'][ind]+"</button>");
 			}	
 			else {
-				$(".now").append(" <button id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
+				$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
 			}
 		}
 		$("#pst button").click(function(){
@@ -321,6 +328,13 @@
 		}
 
 	window.onload = function() {
+		img_url = "./img/hime"
+		if (Math.random()>0.5) {
+			$("body").append('<img src="'+img_url+'2.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
+		}
+		else{
+			$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
+		}
 		
 		$.get("./data/"+now_eid+".json", function(data){
 			var ctx = document.getElementById('myChart').getContext('2d');
