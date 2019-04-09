@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import re
 # 44 1周年活动
 
-newest = '78'
+newest = '81'
 # 想要比对的
 # 72,68,52,56,64
 nums = ['78','72', '68', '52', '56', '64']
@@ -61,8 +61,9 @@ def get_eventname():
         json.dump(data ,f)
 
 # 下载数据
-map(get_data, nums)
-# map(get_data, map(str,range(4,78)))
+map(get_data, ['81'])
+# map(get_data, nums)
+# map(get_data, map(str,range(78,82)))
 
 # 比对数据
 # write_csv(nums, '2500', 'w')
