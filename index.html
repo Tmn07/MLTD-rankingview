@@ -40,9 +40,11 @@
 
 
 <script type="text/javascript">
-	var now_eid = "81";
+	var now_eid = "-1";
+	// var now_eid = "85";
 	// 当前比较的id
-	var now_compare_eidlist = [now_eid];
+	// var now_compare_eidlist = [now_eid];
+	var now_compare_eidlist = [];
 	// id对应的0档1档原始数据
 	var now_compare_data = {};
 	var now_compare_label = {};
@@ -141,9 +143,42 @@
 
 		window.myLine.update();
 	}
+	function set_nowdata(){
+		newColor = getRandomColor();
+		eid = String(now_eid);
+		label_list = now_compare_label[eid];
+		new_time_len = label_list.length;
+		if (zero_flag==1) {
+			data_flag_list = now_compare_data[eid].data100;
+		}
+		else{
+			data_flag_list = now_compare_data[eid].data2500;
+		}
+		dataset = {
+			eid: eid,
+			backgroundColor: newColor,
+			fill: false,
+			borderColor: newColor,
+			label: id2name(eid),
+			data: data_flag_list
+		};
+		if (new_time_len > config.data.labels.length || dictlen(compare_dataset)==0) {
+			config.data.labels = label_list;
+		}
+		compare_labels[eid] = label_list;
+		compare_dataset[eid] = dataset;
+		config.data.datasets.push(dataset);
+		now_compare_eidlist.push(eid);
+		window.myLine.update();
+	}
 
 	function add_data(eid){
-		$.get("./data/"+eid+".json", function(data){
+		if (eid == now_eid) {
+			set_nowdata();
+			return;
+		}
+		$.get("http://tmn07.com/event/"+eid+".json", function(data){
+		// $.get("./data/"+eid+".json", function(data){
 			new_time_len = data.data.logs.length;
 			label_list = [];
 			data_list = [];
@@ -183,7 +218,7 @@
 					config.data.labels = label_list;
 				}
 			}
-			
+			console.log(data_flag_list)
 			dataset = {
 				eid: eid,
 				backgroundColor: newColor,
@@ -278,38 +313,38 @@
 			});
 		window.myLine.update();
 	})
-
-	$.get("events.json",function(data){
-		// console.log(data);
-		for (var ind in data['tour']){
-			// console.log(ind+"----"+data['tour'][ind])
-			if (ind != now_eid) {
-				$(".tour").append(" <button class='pure-button' id='"+ ind +"'>"+data['tour'][ind]+"</button>");
-			}
-			else {
-				$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['tour'][ind]+"</button>");
-			}
-		}
-		for (var ind in data['theater']){
-			if (ind!=now_eid) {
-				$(".theater").append(" <button class='pure-button' id='"+ ind +"'>"+data['theater'][ind]+"</button>");
-			}	
-			else {
-				$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
-			}
-		}
-		$("#pst button").click(function(){
-			if (now_compare_eidlist.indexOf(this.id)==-1) {
-				add_data(this.id);
-				$(this).css('color', '#5abfb7')
-				// #5abfb7
-			}
-			else{
-				remove_data(this.id);
-				$(this).css('color', '#000000')
-			}
-		})
-	})
+	// old offline version
+	// $.get("events.json",function(data){
+	// 	// console.log(data);
+	// 	for (var ind in data['tour']){
+	// 		// console.log(ind+"----"+data['tour'][ind])
+	// 		if (ind != now_eid) {
+	// 			$(".tour").append(" <button class='pure-button' id='"+ ind +"'>"+data['tour'][ind]+"</button>");
+	// 		}
+	// 		else {
+	// 			$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['tour'][ind]+"</button>");
+	// 		}
+	// 	}
+	// 	for (var ind in data['theater']){
+	// 		if (ind!=now_eid) {
+	// 			$(".theater").append(" <button class='pure-button' id='"+ ind +"'>"+data['theater'][ind]+"</button>");
+	// 		}	
+	// 		else {
+	// 			$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
+	// 		}
+	// 	}
+	// 	$("#pst button").click(function(){
+	// 		if (now_compare_eidlist.indexOf(this.id)==-1) {
+	// 			add_data(this.id);
+	// 			$(this).css('color', '#5abfb7')
+	// 			// #5abfb7
+	// 		}
+	// 		else{
+	// 			remove_data(this.id);
+	// 			$(this).css('color', '#000000')
+	// 		}
+	// 	})
+	// })
 
 	var config = {
 		    type: 'line',
@@ -327,26 +362,24 @@
 		    }
 		}
 
-	window.onload = function() {
-		img_url = "./img/hime"
-		if (Math.random()>0.5) {
-			$("body").append('<img src="'+img_url+'2.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
-		}
-		else{
-			$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
-		}
-		
-		$.get("./data/"+now_eid+".json", function(data){
+	function get_nowdata(){
+		now_data_url = "https://api.matsurihi.me/mltd/v1/events/"+now_eid+"/rankings/logs/eventPoint/100,2500,5000,10000,25000,50000"
+			// $.get("./data/"+now_eid+".json", function(data){
+		$.get(now_data_url, function(data){
 			var ctx = document.getElementById('myChart').getContext('2d');
-			// console.log(data);
-			time_len = data.data.logs.length;
+			console.log(data);
+			time_len = data[0].data.length;
+			// time_len = data.data.logs.length;
 			label_list = [];
 			data_list = [];
 			data100_list = [];
 			for (var i = 0; i < time_len; i++) {
-				label_list.push(data.data.logs[i].datetime.slice(11,16));
-				data_list.push(data.data.logs[i].borders[2500]);
-				data100_list.push(data.data.logs[i].borders[100]);
+				label_list.push(data[0].data[i].summaryTime.slice(11,16));
+				// label_list.push(data.data.logs[i].datetime.slice(11,16));
+				data_list.push(data[1].data[i].score);
+				// data_list.push(data.data.logs[i].borders[2500]);
+				data100_list.push(data[0].data[i].score);
+				// data100_list.push(data.data.logs[i].borders[100]);
 			}
 			now_compare_label[now_eid] = label_list.slice(0);
 			now_compare_data[now_eid] = {
@@ -354,7 +387,7 @@
 				data100: data100_list.slice(0)
 			}
 			dataset = {
-				eid: now_eid,
+				eid: String(now_eid),
 				fill: false,
 				label: id2name(now_eid),
 				data: data_list
@@ -366,6 +399,60 @@
 			window.myLine = new Chart(ctx, config);
 			// console.log('???');
 		})
+	}
+
+	window.onload = function() {
+		img_url = "./img/hime"
+		if (Math.random()>0.5) {
+			$("body").append('<img src="'+img_url+'2.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
+		}
+		else{
+			$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
+		}
+
+		// https://api.matsurihi.me/mltd/v1/events
+		$.get("https://api.matsurihi.me/mltd/v1/events",function(data){
+
+			for (var i = data.length - 1; i >= 0; i--) {
+				// find last tour or theater id
+				if (data[i].type == 3 || data[i].type==4)
+				{
+					$(".now").append(" <button class='pure-button' id='"+ String(data[i].id) +"' style='color: rgb(90, 191, 183);'>"+data[i].name+"</button>");
+					now_eid = data[i].id;
+					break;
+				}
+				
+			}
+			// now_eid = data[data.length-1].id;
+			now_compare_eidlist = [String(now_eid)];
+			console.log(data)
+			for(var ind in data){
+				// theater
+				if (data[ind].name.startsWith("プラチナスターシアター")){
+					if (data[ind].id==now_eid) {break}
+					$(".theater").append(" <button class='pure-button' id='"+ data[ind].id +"'>"+data[ind].name.slice(12,-1)+"</button>");
+				}
+				// tour
+				if (data[ind].name.startsWith("プラチナスターツアー")){
+					if (data[ind].id==now_eid) {break}
+					$(".tour").append(" <button class='pure-button' id='"+ data[ind].id +"'>"+data[ind].name.slice(11,-1)+"</button>");
+				}
+			}
+			$("#pst button").click(function(){
+				if (now_compare_eidlist.indexOf(this.id)==-1) {
+					add_data(this.id);
+					$(this).css('color', '#5abfb7')
+					// #5abfb7
+				}
+				else{
+					remove_data(this.id);
+					$(this).css('color', '#000000')
+				}
+			})
+
+			get_nowdata();
+		});
+		
 		
 	};
 </script>

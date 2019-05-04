@@ -5,11 +5,11 @@ from bs4 import BeautifulSoup
 import re
 # 44 1周年活动
 
-newest = '81'
+newest = '85'
 # 想要比对的
 # 72,68,52,56,64
-nums = ['78','72', '68', '52', '56', '64']
-ranking = '100'
+nums = ['83','81']
+# ranking = '100'
 data_dir = './data/'
 
 def get_data(num):
@@ -61,7 +61,7 @@ def get_eventname():
         json.dump(data ,f)
 
 # 下载数据
-map(get_data, ['81'])
+map(get_data, ['85'])
 # map(get_data, nums)
 # map(get_data, map(str,range(78,82)))
 
@@ -71,4 +71,4 @@ map(get_data, ['81'])
 # write_csv(['72', '68', '56'],'2500', 'w')
 # write_csv(['27'],'2000', 'a')
 
-# get_eventname()
+get_eventname()
