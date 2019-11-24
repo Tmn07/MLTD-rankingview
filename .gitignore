@@ -2,3 +2,7 @@
 # *-min.css
 *.min.js
 test/*
+data/*
+new_data/*
+*.pyc
+*.json

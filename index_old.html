@@ -25,16 +25,12 @@
 		<div class="tour">Tour:</div>
 		<div class="now">Now:</div>
 	</div>
-	<div class="borders">Rank: 
-		<button class="pure-button" id="zero">0档</button>
-		<button class="pure-button" id="one" style="color: #5abfb7">1档</button>
-		<button class="pure-button" id="two">2档</button>
-		<button class="pure-button" id="three">3档</button>
-	</div>
 	<div class="opt">Opt: 
 		<button class="pure-button" id="now">按当前活动时间展示</button>
 		<!-- <button id="last3">最后三天</button> -->
 		<button class="pure-button" id="alltime" style="color: #5abfb7">按完整时间展示</button>
+		<button class="pure-button" id="zero">0档</button>
+		<button class="pure-button" id="one" style="color: #5abfb7">1档</button>
 		<button class="pure-button" id="clear">清除</button>
 	</div>
 </div>
@@ -63,8 +59,6 @@
 	var alltime_flag = 1;
 	var zero_flag = 0;
 	var one_flag = 1;
-	var two_flag = 0;
-	var three_flag = 0;
 
 	function dictlen(dict) {
 		var i = 0;
@@ -104,43 +98,9 @@
 		return $('button#'+eid).text();
 	}
 
-
-	function change2two(){
-		one_flag = 0;
-		zero_flag = 0;
-		two_flag = 1;
-		three_flag = 0;
-		nowlen = config.data.labels.length;
-		config.data.datasets = []
-		for (var i=0; i<now_compare_eidlist.length; i++) {
-			tmpid = now_compare_eidlist[i];
-			compare_dataset[tmpid].data = now_compare_data[tmpid].data5000.slice(0,nowlen);
-			config.data.datasets.push(compare_dataset[tmpid]);
-		}
-		window.myLine.update();
-	}
-
-	function change2three(){
-		one_flag = 0;
-		zero_flag = 0;
-		two_flag = 0;
-		three_flag = 1;
-		nowlen = config.data.labels.length;
-		config.data.datasets = []
-		for (var i=0; i<now_compare_eidlist.length; i++) {
-			tmpid = now_compare_eidlist[i];
-			compare_dataset[tmpid].data = now_compare_data[tmpid].data10000.slice(0,nowlen);
-			config.data.datasets.push(compare_dataset[tmpid]);
-		}
-		window.myLine.update();
-	}
-
-
 	function change2one(){
 		one_flag = 1;
 		zero_flag = 0;
-		two_flag = 0;
-		three_flag = 0;
 		nowlen = config.data.labels.length;
 		// console.log(nowlen);
 		config.data.datasets = []
@@ -155,8 +115,6 @@
 	function change2zero(){
 		one_flag = 0;
 		zero_flag = 1;
-		two_flag = 0;
-		three_flag = 0;
 		nowlen = config.data.labels.length;
 		// console.log(nowlen);
 		config.data.datasets = []
@@ -194,14 +152,8 @@
 		if (zero_flag==1) {
 			data_flag_list = now_compare_data[eid].data100;
 		}
-		if(one_flag==1){
+		else{
 			data_flag_list = now_compare_data[eid].data2500;
-		}			
-		if(two_flag==1){
-			data_flag_list = now_compare_data[eid].data5000;
-		}			
-		if(three_flag==1){
-			data_flag_list = now_compare_data[eid].data10000;
 		}
 		dataset = {
 			eid: eid,
@@ -226,51 +178,36 @@
 			set_nowdata();
 			return;
 		}
-		// $.get("http://tmn07.com/event/"+eid+".json", function(data){
-		$.get("https://tmn07.com/rank_v1911/"+eid+".json", function(data){
-			new_time_len = data.log.length;
+		$.get("http://tmn07.com/event/"+eid+".json", function(data){
+		// $.get("./data/"+eid+".json", function(data){
+			new_time_len = data.data.logs.length;
 			label_list = [];
 			data_list = [];
 			data100_list = [];
-			data5000_list = [];
-			data10000_list = [];
 			for (var i = 0; i < new_time_len; i++) {
-				label_list.push(data.log[i].t);
-
-				if (eid>10) {
-					data100_list.push(data.log[i].d[0]);
-					data_list.push(data.log[i].d[1]);
-					data5000_list.push(data.log[i].d[2]);
-					data10000_list.push(data.log[i].d[3]);
+				label_list.push(data.data.logs[i].datetime.slice(11,16));
+				if (eid >= 33) {
+					data_list.push(data.data.logs[i].borders[2500]);
 				}
 				else{
-					data_list.push(data.log[i].d[0]);
-					data5000_list.push(data.log[i].d[1]);
-					data10000_list.push(data.log[i].d[2]);
+					data_list.push(data.data.logs[i].borders[2000]);
 				}
-
+				if (eid>10) {
+					data100_list.push(data.data.logs[i].borders[100]);
+				}
 			}
 			now_compare_label[eid] = label_list.slice(0);
 			now_compare_data[eid] = {
 				data2500: data_list.slice(0),
-				data100: data100_list.slice(0),
-				data5000: data5000_list.slice(0),
-				data10000: data10000_list.slice(0)
+				data100: data100_list.slice(0)
 			}
 			newColor = getRandomColor();
 			if (zero_flag==1) {
 				data_flag_list = data100_list;
 			}
-			if(one_flag==1){
+			else{
 				data_flag_list = data_list;
-			}			
-			if(two_flag==1){
-				data_flag_list = data5000_list;
-			}			
-			if(three_flag==1){
-				data_flag_list = data10000_list;
 			}
-
 			if (now_flag) {
 				nowlen = config.data.labels.length;
 				// console.log(nowlen);
@@ -282,7 +219,7 @@
 					config.data.labels = label_list;
 				}
 			}
-			// console.log(data_flag_list)
+			console.log(data_flag_list)
 			dataset = {
 				eid: eid,
 				backgroundColor: newColor,
@@ -317,36 +254,13 @@
 		change2zero();
 		$(this).css('color', '#5abfb7')
 		$("#one").css('color', '#000000')
-		$("#two").css('color', '#000000')
-		$("#three").css('color', '#000000')
 	})
 
 	$("#one").click(function(){
 		change2one();
 		$(this).css('color', '#5abfb7')
 		$("#zero").css('color', '#000000')
-		$("#two").css('color', '#000000')
-		$("#three").css('color', '#000000')
 	})
-
-	$("#two").click(function(){
-		change2two();
-		$(this).css('color', '#5abfb7')
-		$("#zero").css('color', '#000000')
-		$("#one").css('color', '#000000')
-		$("#three").css('color', '#000000')
-	})
-
-	$("#three").click(function(){
-		change2three();
-		$(this).css('color', '#5abfb7')
-		$("#zero").css('color', '#000000')
-		$("#one").css('color', '#000000')
-		$("#two").css('color', '#000000')
-	})
-
-
-
 	// $("#last3").click(function(){
 	// 	len = 24*2*3;
 	// 	config.data.datasets.forEach(function(dataset) {
@@ -400,6 +314,39 @@
 			});
 		window.myLine.update();
 	})
+	
+	// old offline version
+	// $.get("events.json",function(data){
+	// 	// console.log(data);
+	// 	for (var ind in data['tour']){
+	// 		// console.log(ind+"----"+data['tour'][ind])
+	// 		if (ind != now_eid) {
+	// 			$(".tour").append(" <button class='pure-button' id='"+ ind +"'>"+data['tour'][ind]+"</button>");
+	// 		}
+	// 		else {
+	// 			$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['tour'][ind]+"</button>");
+	// 		}
+	// 	}
+	// 	for (var ind in data['theater']){
+	// 		if (ind!=now_eid) {
+	// 			$(".theater").append(" <button class='pure-button' id='"+ ind +"'>"+data['theater'][ind]+"</button>");
+	// 		}	
+	// 		else {
+	// 			$(".now").append(" <button class='pure-button' id='"+ ind +"' style='color: rgb(90, 191, 183);'>"+data['theater'][ind]+"</button>");
+	// 		}
+	// 	}
+	// 	$("#pst button").click(function(){
+	// 		if (now_compare_eidlist.indexOf(this.id)==-1) {
+	// 			add_data(this.id);
+	// 			$(this).css('color', '#5abfb7')
+	// 			// #5abfb7
+	// 		}
+	// 		else{
+	// 			remove_data(this.id);
+	// 			$(this).css('color', '#000000')
+	// 		}
+	// 	})
+	// })
 
 	var config = {
 		    type: 'line',
@@ -418,7 +365,7 @@
 		}
 
 	function get_nowdata(){
-		now_data_url = "https://api.matsurihi.me/mltd/v1/events/"+now_eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
+		now_data_url = "https://api.matsurihi.me/mltd/v1/events/"+now_eid+"/rankings/logs/eventPoint/100,2500,5000,10000,25000,50000"
 			// $.get("./data/"+now_eid+".json", function(data){
 		$.get(now_data_url, function(data){
 			var ctx = document.getElementById('myChart').getContext('2d');
@@ -428,22 +375,18 @@
 			label_list = [];
 			data_list = [];
 			data100_list = [];
-			data5000_list = [];
-			data10000_list = [];
 			for (var i = 0; i < time_len; i++) {
 				label_list.push(data[0].data[i].summaryTime.slice(11,16));
+				// label_list.push(data.data.logs[i].datetime.slice(11,16));
 				data_list.push(data[1].data[i].score);
+				// data_list.push(data.data.logs[i].borders[2500]);
 				data100_list.push(data[0].data[i].score);
-				data5000_list.push(data[2].data[i].score);
-				data10000_list.push(data[3].data[i].score);
-				
+				// data100_list.push(data.data.logs[i].borders[100]);
 			}
 			now_compare_label[now_eid] = label_list.slice(0);
 			now_compare_data[now_eid] = {
 				data2500: data_list.slice(0),
-				data100: data100_list.slice(0),
-				data5000: data5000_list.slice(0),
-				data10000: data10000_list.slice(0)
+				data100: data100_list.slice(0)
 			}
 			dataset = {
 				eid: String(now_eid),
@@ -456,6 +399,7 @@
 			config.data.labels = label_list;
 			config.data.datasets = [dataset];
 			window.myLine = new Chart(ctx, config);
+			// console.log('???');
 		})
 	}
 
@@ -468,32 +412,34 @@
 			$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
 		}
 
-		$.get("https://tmn07.com/rank_v1911/events_list.json",function(data){
+		// https://api.matsurihi.me/mltd/v1/events
+		$.get("https://api.matsurihi.me/mltd/v1/events",function(data){
 
-			theater_lastid = data[0][data[1].length-1]['id'];
-			tour_lastid = data[1][data[1].length-1]['id'];
-			if (theater_lastid > tour_lastid) {
-				now_eid = theater_lastid;
-				now_name = data[0][data[1].length-1]['name'];
+			for (var i = data.length - 1; i >= 0; i--) {
+				// find last tour or theater id
+				if (data[i].type == 3 || data[i].type==4)
+				{
+					$(".now").append(" <button class='pure-button' id='"+ String(data[i].id) +"' style='color: rgb(90, 191, 183);'>"+data[i].name+"</button>");
+					now_eid = data[i].id;
+					break;
+				}
+				
 			}
-			else{
-				now_eid = tour_lastid;
-				now_name = data[1][data[1].length-1]['name'];
-			}
-			$(".now").append(" <button class='pure-button' id='"+ String(now_eid) +"' style='color: rgb(90, 191, 183);'>"+now_name+"</button>");
-
+			// now_eid = data[data.length-1].id;
 			now_compare_eidlist = [String(now_eid)];
-			// console.log(data)
-			for(var ind in data[0]){
-				if (data[0][ind].id==now_eid) {break}
-				$(".theater").append(" <button class='pure-button' id='"+ data[0][ind].id +"'>"+data[0][ind].name+"</button>");				
+			console.log(data)
+			for(var ind in data){
+				// theater
+				if (data[ind].name.startsWith("プラチナスターシアター")){
+					if (data[ind].id==now_eid) {break}
+					$(".theater").append(" <button class='pure-button' id='"+ data[ind].id +"'>"+data[ind].name.slice(12,-1)+"</button>");
+				}
+				// tour
+				if (data[ind].name.startsWith("プラチナスターツアー")){
+					if (data[ind].id==now_eid) {break}
+					$(".tour").append(" <button class='pure-button' id='"+ data[ind].id +"'>"+data[ind].name.slice(11,-1)+"</button>");
+				}
 			}
-			for(var ind in data[1]){
-				if (data[1][ind].id==now_eid) {break}
-				$(".tour").append(" <button class='pure-button' id='"+ data[1][ind].id +"'>"+data[1][ind].name+"</button>");
-			}
-
-
 			$("#pst button").click(function(){
 				if (now_compare_eidlist.indexOf(this.id)==-1) {
 					add_data(this.id);

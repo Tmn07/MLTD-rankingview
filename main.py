@@ -8,7 +8,7 @@ import re
 newest = '85'
 # 想要比对的
 # 72,68,52,56,64
-nums = ['83','81']
+nums = ['108']
 # ranking = '100'
 data_dir = './data/'
 
@@ -61,7 +61,7 @@ def get_eventname():
         json.dump(data ,f)
 
 # 下载数据
-map(get_data, ['85'])
+map(get_data, nums)
 # map(get_data, nums)
 # map(get_data, map(str,range(78,82)))
 
