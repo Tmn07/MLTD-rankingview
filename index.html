@@ -470,11 +470,11 @@
 
 		$.get("https://tmn07.com/rank_v1911/events_list.json",function(data){
 
-			theater_lastid = data[0][data[1].length-1]['id'];
+			theater_lastid = data[0][data[0].length-1]['id'];
 			tour_lastid = data[1][data[1].length-1]['id'];
 			if (theater_lastid > tour_lastid) {
 				now_eid = theater_lastid;
-				now_name = data[0][data[1].length-1]['name'];
+				now_name = data[0][data[0].length-1]['name'];
 			}
 			else{
 				now_eid = tour_lastid;
