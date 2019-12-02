@@ -3,10 +3,10 @@
 <head>
 	<title>ranking view test page</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="./buttons-min.css">
+	<link rel="stylesheet" type="text/css" href="./resource/buttons-min.css">
+	<script type="text/javascript" src="./resource/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="./resource/Chart.min.js"></script>
 	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script> -->
-	<script type="text/javascript" src="jquery-3.3.1.js"></script>
-	<script type="text/javascript" src="Chart.min.js"></script>
 	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
 	<style type="text/css">
 		.pure-button {
@@ -460,14 +460,15 @@
 	}
 
 	window.onload = function() {
-		img_url = "./img/hime"
-		if (Math.random()>0.5) {
-			$("body").append('<img src="'+img_url+'2.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
-		}
-		else{
-			$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
-		}
-
+		// img_url = "./img/hime"
+		// if (Math.random()>0.5) {
+		// 	$("body").append('<img src="'+img_url+'2.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
+		// }
+		// else{
+		// 	$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
+		// }
+		// 
+		$("body").append('<img src="http://tmn07.com/31-00.png" style="position: fixed;right: 0px;top: 0px;height: 90px; width: 80px">')
 		$.get("https://tmn07.com/rank_v1911/events_list.json",function(data){
 
 			theater_lastid = data[0][data[0].length-1]['id'];

@@ -6,3 +6,4 @@ data/*
 new_data/*
 *.pyc
 *.json
+old/*

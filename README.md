@@ -6,27 +6,19 @@
 
 ## 代码结构
 
-main.py 相关数据爬虫
+new_main.py 相关数据爬虫
 
 index.html 主页
 
-data/xx.json 活动数据
+new_data 手动建目录 存储数据（
 
-events.json 全部活动名称
-
-run.bat 启动脚本
+events_list.json 活动信息列表
 
 ## TODO
 
-- [ ] 实时更新方案
 - [ ] 优化界面
-- [ ] 完善功能（时间段展示，相近档次提醒？......）
-  - [x] 展示时间调整
-  - [x] 0/1档切换
-
-## maintain
-
-活动结束后，爬取新的数据，存cdn即可？
+- [ ] 自动上传cdn
+- [ ] 时间对齐（因为有部分漏的数据）
 
 ## TIP
 
