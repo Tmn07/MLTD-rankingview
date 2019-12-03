@@ -3,7 +3,7 @@ import requests, json
 import os.path as path
 from bs4 import BeautifulSoup
 import re
-from event_list import get_enents
+from event_list import get_events
 
 def get_loglenth(eid = "108"):
     url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
@@ -48,7 +48,7 @@ def get_eventdata_old(eid="32"):
     else:
         print(eid+" error")    
 
-def get_eventdata(eid = "108"):
+def get_eventdata(eid = "108", upload=False):
     # 25000&50000 data loss...
     url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
     r = requests.get(url)
@@ -85,6 +85,14 @@ def get_eventdata(eid = "108"):
     with open('new_data/'+eid+'.json', 'w') as f:
         json.dump(result ,f)
         print(eid + " save ok")
+    if upload:
+        from qnlib.test import *
+        q = Auth(access_key, secret_key)
+        upload_info = upload_data(q, "rank_v1911/"+eid+".json", 'new_data/'+eid+'.json')
+        if upload_info.status_code==200:
+            print(eid + ".json upload ok")
+        else:
+            print(upload_info)
 
 
 # all_data
@@ -99,5 +107,6 @@ def get_eventdata(eid = "108"):
 #         print(str(e['id']))
 #         get_eventdata_old(str(e['id']))
 
-get_eventdata('110')
-get_enents()
+
+get_eventdata('102', upload=True)
+get_events(upload=True)

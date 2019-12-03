@@ -7,3 +7,6 @@ new_data/*
 *.pyc
 *.json
 old/*
+
+qnlib/config.py
+*.json
