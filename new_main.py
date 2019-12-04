@@ -88,7 +88,7 @@ def get_eventdata(eid = "108", upload=False):
     if upload:
         from qnlib.test import *
         q = Auth(access_key, secret_key)
-        upload_info = upload_data(q, "rank_v1911/"+eid+".json", 'new_data/'+eid+'.json')
+        upload_info = upload_data(q, "rank_v1912/"+eid+".json", 'new_data/'+eid+'.json')
         if upload_info.status_code==200:
             print(eid + ".json upload ok")
         else:
@@ -108,5 +108,5 @@ def get_eventdata(eid = "108", upload=False):
 #         get_eventdata_old(str(e['id']))
 
 
-get_eventdata('102', upload=True)
+# get_eventdata('68', upload=False)
 get_events(upload=True)

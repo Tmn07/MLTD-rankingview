@@ -28,9 +28,9 @@ def get_events(upload=False):
 	if upload:
 		from qnlib.test import *
 		q = Auth(access_key, secret_key)
-		print (delete_data(q, "rank_v1911/events_list.json"))
-		print (upload_data(q, "rank_v1911/events_list.json", 'events_list.json'))
-		print (refresh_data(q, 'https://tmn07.com/rank_v1911/events_list.json'))
+		print (delete_data(q, "rank_v1912/events_list.json"))
+		print (upload_data(q, "rank_v1912/events_list.json", 'events_list.json'))
+		print (refresh_data(q, 'https://tmn07.com/rank_v1912/events_list.json'))
 
 if __name__ == '__main__':
 	get_events(True)

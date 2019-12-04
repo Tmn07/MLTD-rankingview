@@ -227,7 +227,7 @@
 			return;
 		}
 		// $.get("http://tmn07.com/event/"+eid+".json", function(data){
-		$.get("https://tmn07.com/rank_v1911/"+eid+".json", function(data){
+		$.get("https://tmn07.com/rank_v1912/"+eid+".json", function(data){
 			new_time_len = data.log.length;
 			label_list = [];
 			data_list = [];
@@ -469,7 +469,7 @@
 		// }
 		// 
 		$("body").append('<img src="http://tmn07.com/31-00.png" style="position: fixed;right: 0px;top: 0px;height: 90px; width: 80px">')
-		$.get("https://tmn07.com/rank_v1911/events_list.json",function(data){
+		$.get("https://tmn07.com/rank_v1912/events_list.json",function(data){
 
 			theater_lastid = data[0][data[0].length-1]['id'];
 			tour_lastid = data[1][data[1].length-1]['id'];

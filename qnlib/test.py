@@ -11,7 +11,7 @@ def delete_data(q, path):
 	key = path
 	#删除bucket_name 中的文件 key
 	ret, info = bucket.delete(bucket_name, key)
-	assert ret == {}
+	# assert ret == {}
 	return info
 
 def upload_data(q, path_file, localfile):
