@@ -37,25 +37,26 @@ for f in allfile:
 	length = len(data['log'])
 	
 	# fp = open('tmp.csv' ,'a')
-# 	fp = open('348_modif1.csv' ,'a')
-# 	# fp = open("300_modif1.csv", 'a')
-# 	# fp = open("396_modif1.csv", 'a')
-# 	# if length < 310:
-# 	# if length>340 and length < 350:
-# 	if length>390 and length < 400:
-# 		print (eid, length)
-# 		log_data = data['log']
-# 		logs = []
-# 		for d in log_data:
-# 			fp.write(d['t']+",")
-# 			logs.append(d['d'][1]) 
+	fp = open('348_modif1.csv' ,'a')
+	# fp = open("300_modif1.csv", 'a')
+	# fp = open("396_modif1.csv", 'a')
+	# if length < 310:
+	if length>340 and length < 350:
+	# if length>390 and length < 400:
+		print (eid, length)
+		fp.write(str(eid)+",")
+		log_data = data['log']
+		logs = []
+		for d in log_data:
+			# fp.write(d['t']+",")
+			logs.append(d['d'][1]) 
 
-# 		fp.write('\n')
-# 		for i in logs:
-# 			fp.write(str(i)+",")
-# 		fp.write('\n')	
+		# fp.write('\n')
+		for i in logs:
+			fp.write(str(i)+",")
+		fp.write('\n')	
 
-# fp.close()
+fp.close()
 
 
 	# if length in [300,348,396]:

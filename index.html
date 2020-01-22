@@ -371,9 +371,15 @@
 			if (zero_flag) {
 				compare_dataset[tmpid].data = now_compare_data[tmpid].data100.slice(0);
 			}
-			else{
+			if (one_flag) {
 				compare_dataset[tmpid].data = now_compare_data[tmpid].data2500.slice(0);
 			}			
+			if (two_flag){
+				compare_dataset[tmpid].data = now_compare_data[tmpid].data5000.slice(0);
+			}
+			if (three_flag) {
+				compare_dataset[tmpid].data = now_compare_data[tmpid].data10000.slice(0);
+			}
 		}
 
 		config.data.datasets.forEach(function(dataset) {
