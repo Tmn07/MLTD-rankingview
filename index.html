@@ -466,15 +466,16 @@
 	}
 
 	window.onload = function() {
-		// img_url = "./img/hime"
-		// if (Math.random()>0.5) {
-		// 	$("body").append('<img src="'+img_url+'2.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
-		// }
-		// else{
-		// 	$("body").append('<img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;">')
-		// }
+		img_url = "../hime"
+
+		if (Math.random()>0.5) {
+			$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'2.png"  style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
+		}
+		else{
+			$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
+		}
 		// 
-		$("body").append('<img src="http://tmn07.com/31-00.png" style="position: fixed;right: 0px;top: 0px;height: 90px; width: 80px">')
+		// $("body").append('<img src="http://tmn07.com/31-00.png" style="position: fixed;right: 0px;top: 0px;height: 90px; width: 80px">')
 		$.get("https://tmn07.com/rank_v1912/events_list.json",function(data){
 
 			theater_lastid = data[0][data[0].length-1]['id'];
