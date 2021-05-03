@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>ranking view test page</title>
+	<title>MLTD活动档线横向比对</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="./resource/buttons-min.css">
-	<script type="text/javascript" src="./resource/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src="./resource/jquery-3.3.1.js"></script>
 	<script type="text/javascript" src="./resource/Chart.min.js"></script>
 	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script> -->
 	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
@@ -17,12 +17,14 @@
 </head>
 <body>
 <div class="head">
-	<h1>Ranking view</h1>
+	<h1>MLTD活动档线横向比对</h1>
 </div>
 <div>
 	<div id="pst">
 		<div class="theater">Theater:</div>
 		<div class="tour">Tour:</div>
+		<div class="tune">Tune:</div>
+		<div class="twin">TwinStage:</div>
 		<div class="now">Now:</div>
 	</div>
 	<div class="borders">Rank: 
@@ -227,7 +229,8 @@
 			return;
 		}
 		// $.get("http://tmn07.com/event/"+eid+".json", function(data){
-		$.get("https://tmn07.com/rank_v1912/"+eid+".json", function(data){
+		$.get("./data/"+eid+".json", function(data){
+		// $.get("https://tmn07.com/rank_v1912/"+eid+".json", function(data){
 			new_time_len = data.log.length;
 			label_list = [];
 			data_list = [];
@@ -237,7 +240,7 @@
 			for (var i = 0; i < new_time_len; i++) {
 				label_list.push(data.log[i].t);
 
-				if (eid>10) {
+				if (eid>10 || eid == 4) {
 					data100_list.push(data.log[i].d[0]);
 					data_list.push(data.log[i].d[1]);
 					data5000_list.push(data.log[i].d[2]);
@@ -468,29 +471,33 @@
 	window.onload = function() {
 		img_url = "../hime"
 
-		if (Math.random()>0.5) {
-			$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'2.png"  style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
-		}
-		else{
-			$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
-		}
+		// if (Math.random()>0.5) {
+		// 	$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'2.png"  style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
+		// }
+		// else{
+		// 	$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
+		// }
 		// 
 		// $("body").append('<img src="http://tmn07.com/31-00.png" style="position: fixed;right: 0px;top: 0px;height: 90px; width: 80px">')
-		$.get("https://tmn07.com/rank_v1912/events_list.json",function(data){
+
+		$.get("./events.json",function(data){
+		// $.get("https://tmn07.com/rank_v1912/events.json",function(data){
 
 			theater_lastid = data[0][data[0].length-1]['id'];
 			tour_lastid = data[1][data[1].length-1]['id'];
-			if (theater_lastid > tour_lastid) {
-				now_eid = theater_lastid;
-				now_name = data[0][data[0].length-1]['name'];
-			}
-			else{
-				now_eid = tour_lastid;
-				now_name = data[1][data[1].length-1]['name'];
-			}
+			tune_lastid = data[2][data[2].length-1]['id'];
+			twin_lastid = data[3][data[3].length-1]['id'];
+
+			lastids = [theater_lastid,tour_lastid,tune_lastid,twin_lastid];
+			now_eid = Math.max(...lastids);
+			now_type = lastids.indexOf(now_eid);
+
+			now_name = data[now_type][data[now_type].length-1]['name'];
+
 			$(".now").append(" <button class='pure-button' id='"+ String(now_eid) +"' style='color: rgb(90, 191, 183);'>"+now_name+"</button>");
 
 			now_compare_eidlist = [String(now_eid)];
+
 			// console.log(data)
 			for(var ind in data[0]){
 				if (data[0][ind].id==now_eid) {break}
@@ -500,7 +507,14 @@
 				if (data[1][ind].id==now_eid) {break}
 				$(".tour").append(" <button class='pure-button' id='"+ data[1][ind].id +"'>"+data[1][ind].name+"</button>");
 			}
-
+			for(var ind in data[2]){
+				if (data[2][ind].id==now_eid) {break}
+				$(".tune").append(" <button class='pure-button' id='"+ data[2][ind].id +"'>"+data[2][ind].name+"</button>");
+			}
+			for(var ind in data[3]){
+				if (data[3][ind].id==now_eid) {break}
+				$(".twin").append(" <button class='pure-button' id='"+ data[3][ind].id +"'>"+data[3][ind].name+"</button>");
+			}
 
 			$("#pst button").click(function(){
 				if (now_compare_eidlist.indexOf(this.id)==-1) {

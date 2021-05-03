@@ -1,9 +1,12 @@
 # coding=utf-8
 import requests, json
-import os.path as path
 from bs4 import BeautifulSoup
-import re
-from event_list import get_events
+# from event_list import get_events
+import json
+from os import path
+from os import mkdir
+
+from log import *
 
 def get_loglenth(eid = "108"):
     url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
@@ -42,19 +45,22 @@ def get_eventdata_old(eid="32"):
             log_point.append(data_dict)
 
         result['log'] = log_point
-        with open('new_data/'+eid+'.json', 'w') as f:
+        with open(ddir+eid+'.json', 'w') as f:
             json.dump(result, f)
-            print(eid+'.json save')
+            print(eid+'.json saved')
     else:
         print(eid+" error")    
 
-def get_eventdata(eid = "108", upload=False):
+
+def get_eventdata(eid = "108", borders=[100,2500,5000,10000], ddir='data/', upload=False):
     # 25000&50000 data loss...
-    url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
+    borders_url = ','.join(map(str,borders))
+    url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/"+borders_url
     r = requests.get(url)
     data = r.json()
     lenth = len(data[0]['data'])
-    result = {"id": eid, 'borders':[100,2500,5000,10000]}
+    # old borders=[100,2000,5000,10000]
+    result = {"id": eid, 'borders':borders}
     log_point = []
 
     # 验证长度是否一致
@@ -82,31 +88,43 @@ def get_eventdata(eid = "108", upload=False):
         log_point.append(data_dict)
 
     result['log'] = log_point
-    with open('new_data/'+eid+'.json', 'w') as f:
+    with open(ddir+eid+'.json', 'w') as f:
         json.dump(result ,f)
-        print(eid + " save ok")
-    if upload:
-        from qnlib.test import *
-        q = Auth(access_key, secret_key)
-        upload_info = upload_data(q, "rank_v1912/"+eid+".json", 'new_data/'+eid+'.json')
-        if upload_info.status_code==200:
-            print(eid + ".json upload ok")
-        else:
-            print(upload_info)
+        # print(eid + " saved")
+        logging.info(eid + " saved")
+
+    # if upload:
+    #     from qnlib.test import *
+    #     q = Auth(access_key, secret_key)
+    #     upload_info = upload_data(q, "rank_v1912/"+eid+".json", 'new_data/'+eid+'.json')
+    #     if upload_info.status_code==200:
+    #         print(eid + ".json upload ok")
+    #     else:
+    #         print(upload_info)
 
 
-# all_data
-# url = "https://api.matsurihi.me/mltd/v1/events"
-# r = requests.get(url)
-# data = r.json()
-
-# for e in data:
-#     if (e['type'] == 3 or e['type'] == 4) and e['id']>32:
-#         get_eventdata(str(e['id']))
-#     if (e['type'] == 3 or e['type'] == 4) and e['id']<=32:
-#         print(str(e['id']))
-#         get_eventdata_old(str(e['id']))
 
 
-# get_eventdata('68', upload=False)
-get_events(upload=True)
+
+if __name__ == '__main__':
+
+    # single data
+    get_eventdata(eid = "183")
+
+    # all_data
+    # pst_event_type = [3,4,10,11,12]
+    # pst_newid = 32
+    # ddir = "data/"
+    # if not path.exists(ddir):
+    #     mkdir(ddir)
+    # 
+    # url = "https://api.matsurihi.me/mltd/v1/events"
+    # r = requests.get(url)
+    # data = r.json()
+    # for e in data:
+    #     if e['type'] in pst_event_type and e['id']>pst_newid:
+    #         get_eventdata(str(e['id']))
+
+    #     old pst data lost
+    #     if e['type'] in pst_event_type and e['id']<=pst_newid:
+    #         get_eventdata(str(e['id']), [100,2000,5000,10000])

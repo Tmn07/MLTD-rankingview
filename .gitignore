@@ -1,12 +1,15 @@
-*.csv
-# *-min.css
-*.min.js
+
+old/*
+dev/*
 test/*
 data/*
 new_data/*
-*.pyc
-*.json
-old/*
 
+dev.md
 qnlib/config.py
+rank-log.txt
+
+*.json
+*.csv
+*.pyc
 *.json
