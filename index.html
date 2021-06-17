@@ -4,7 +4,7 @@
 	<title>MLTD活动档线横向比对</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="./resource/buttons-min.css">
-	<script type="text/javascript" src="./resource/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="./resource/jquery.min.js"></script>
 	<script type="text/javascript" src="./resource/Chart.min.js"></script>
 	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script> -->
 	<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script> -->
@@ -19,11 +19,13 @@
 <div class="head">
 	<h1>MLTD活动档线横向比对</h1>
 </div>
+
 <div>
 	<div id="pst">
 		<div class="theater">Theater:</div>
 		<div class="tour">Tour:</div>
 		<div class="tune">Tune:</div>
+		<div class="tail">Tail:</div>
 		<div class="twin">TwinStage:</div>
 		<div class="now">Now:</div>
 	</div>
@@ -431,7 +433,7 @@
 			// $.get("./data/"+now_eid+".json", function(data){
 		$.get(now_data_url, function(data){
 			var ctx = document.getElementById('myChart').getContext('2d');
-			console.log(data);
+			// console.log(data);
 			time_len = data[0].data.length;
 			// time_len = data.data.logs.length;
 			label_list = [];
@@ -468,6 +470,7 @@
 		})
 	}
 
+	// 加载入口
 	window.onload = function() {
 		img_url = "../hime"
 
@@ -487,8 +490,9 @@
 			tour_lastid = data[1][data[1].length-1]['id'];
 			tune_lastid = data[2][data[2].length-1]['id'];
 			twin_lastid = data[3][data[3].length-1]['id'];
+			tail_lastid = data[4][data[4].length-1]['id'];
 
-			lastids = [theater_lastid,tour_lastid,tune_lastid,twin_lastid];
+			lastids = [theater_lastid,tour_lastid,tune_lastid,twin_lastid,tail_lastid];
 			now_eid = Math.max(...lastids);
 			now_type = lastids.indexOf(now_eid);
 
@@ -514,6 +518,10 @@
 			for(var ind in data[3]){
 				if (data[3][ind].id==now_eid) {break}
 				$(".twin").append(" <button class='pure-button' id='"+ data[3][ind].id +"'>"+data[3][ind].name+"</button>");
+			}
+			for(var ind in data[4]){
+				if (data[4][ind].id==now_eid) {break}
+				$(".tail").append(" <button class='pure-button' id='"+ data[4][ind].id +"'>"+data[4][ind].name+"</button>");
 			}
 
 			$("#pst button").click(function(){

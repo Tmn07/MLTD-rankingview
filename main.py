@@ -7,7 +7,7 @@ from getEventData import get_eventdata
 from log import *
 
 
-def get_events(upload=False):
+def get_events(getLast=False,upload=False):
     url = "https://api.matsurihi.me/mltd/v1/events"
     try: 
         r = requests.get(url)
@@ -18,10 +18,11 @@ def get_events(upload=False):
             e_theater = []
             e_tune = []
             e_twin = []
+            e_tail = []
             
             last = -1
             ddir = "data/"
-            pst_event_type = [3,4,10,11,12]
+            pst_event_type = [3,4,10,11,12,13]
 
             for e in data:
                 if e['type'] == 3:
@@ -36,14 +37,20 @@ def get_events(upload=False):
                 if e['type'] == 10 or e['type'] == 12:
                     e_name = e['name'][20:-1]
                     e_twin.append({"id": e['id'], "name": e_name})
+                if e['type'] ==13:
+                    e_name = e['name'][20:-1]
+                    e_tail.append({"id": e['id'], "name": e_name})
+
                 if e['type'] in pst_event_type:
                     last = e['id']
             
             # pst活动已经结束 且 还没有保存过上一个pst活动的数据
-            if (e['type'] not in pst_event_type) and (not path.exists(ddir+str(last)+'.json')):
-                get_eventdata(str(last))
+            if getLast:
+                # 当前活动非pst活动（即pst活动结束）
+                if (e['type'] not in pst_event_type) and (not path.exists(ddir+str(last)+'.json')):
+                    get_eventdata(str(last))
 
-            e_data = [e_theater, e_tour, e_tune, e_twin]
+            e_data = [e_theater, e_tour, e_tune, e_twin, e_tail]
             with open('events.json', 'w') as f:
                 json.dump(e_data ,f)
                 logging.info("events.json update")
@@ -63,4 +70,7 @@ def get_events(upload=False):
 
 
 if __name__ == '__main__':
-    get_events(False)
+    # 只更新events.json
+    # get_events(False,False)
+    # 线上部署，检查上一个活动数据是否保存
+    get_events(True,False)

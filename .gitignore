@@ -13,3 +13,4 @@ rank-log.txt
 *.csv
 *.pyc
 *.json
+*.xlsx
