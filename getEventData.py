@@ -8,7 +8,7 @@ from os import mkdir
 
 from log import *
 
-def get_loglenth(eid = "108"):
+def get_loglength(eid = "108"):
     url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
     r = requests.get(url)
     data = r.json()
@@ -30,8 +30,8 @@ def get_eventdata_old(eid="32"):
     if jsondata['status'] == 1:
         result = {"id": eid, 'borders': jsondata['data']['borders'][:-3]}
         log_point = []
-        lenth = len(jsondata['data']['logs'])
-        for t in range(lenth):
+        length = len(jsondata['data']['logs'])
+        for t in range(length):
             data_point = []
             if int(eid)>10:
                 data_point.append(jsondata['data']['logs'][t]['borders']['100'])
@@ -58,15 +58,21 @@ def get_eventdata(eid = "108", borders=[100,2500,5000,10000], ddir='data/', uplo
     url = "https://api.matsurihi.me/mltd/v1/events/"+eid+"/rankings/logs/eventPoint/"+borders_url
     r = requests.get(url)
     data = r.json()
-    lenth = len(data[0]['data'])
+    length = len(data[0]['data'])
     # old borders=[100,2000,5000,10000]
     result = {"id": eid, 'borders':borders}
     log_point = []
 
+    lengths = [len(data[i]['data']) for i in range(len(borders))]
+
+    d1 = lengths[1] - length
+    d2 = lengths[2] - length
+    d3 = lengths[3] - length
+
     # 验证长度是否一致
     # nums = len(data)
     # pre = len(data[0]['data'])
-    # print(pre)
+    # # print(pre)
     # for i in range(1, nums):
     #     tmp = len(data[i]['data'])
     #     print(tmp)
@@ -77,12 +83,24 @@ def get_eventdata(eid = "108", borders=[100,2500,5000,10000], ddir='data/', uplo
     #         print('wrong:' + eid)
     #         return 0
 
-    for t in range(lenth):
+    for t in range(length):
         data_point = []
         data_point.append(int(data[0]["data"][t]["score"]))
-        data_point.append(int(data[1]["data"][t]["score"]))
-        data_point.append(int(data[2]["data"][t]["score"]))
-        data_point.append(int(data[3]["data"][t]["score"]))
+        if t <-d1:
+            data_point.append(0)
+        else:
+            data_point.append(int(data[1]["data"][t+d1]["score"]))
+
+        if t <-d2:
+            data_point.append(0)
+        else:
+            data_point.append(int(data[2]["data"][t+d2]["score"]))
+
+        if t <-d3:
+            data_point.append(0)
+        else:
+            data_point.append(int(data[3]["data"][t+d3]["score"]))
+
         data_time = data[0]['data'][t]["summaryTime"]
         data_dict = {"t": data_time[11:-9], "d": data_point}
         log_point.append(data_dict)
@@ -109,7 +127,7 @@ def get_eventdata(eid = "108", borders=[100,2500,5000,10000], ddir='data/', uplo
 if __name__ == '__main__':
 
     # single data
-    get_eventdata(eid = "183")
+    get_eventdata(eid = "196")
 
     # all_data
     # pst_event_type = [3,4,10,11,12]

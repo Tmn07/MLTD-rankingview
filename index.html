@@ -428,6 +428,17 @@
 		    }
 		}
 
+	// 对齐数据长度
+	function unshift_data(data, idx, time_len){
+		time_len3 = data[idx].data.length;
+		if (time_len3<time_len) {
+			d = time_len-time_len3;
+			for (var i = 0; i < d; i++) {
+				data[idx].data.unshift({score:0})
+			}				
+		}
+	}
+
 	function get_nowdata(){
 		now_data_url = "https://api.matsurihi.me/mltd/v1/events/"+now_eid+"/rankings/logs/eventPoint/100,2500,5000,10000"
 			// $.get("./data/"+now_eid+".json", function(data){
@@ -437,18 +448,25 @@
 			time_len = data[0].data.length;
 			// time_len = data.data.logs.length;
 			label_list = [];
-			data_list = [];
+			data_list = []; // 2500
 			data100_list = [];
 			data5000_list = [];
 			data10000_list = [];
+
+			unshift_data(data, 1, time_len)
+			unshift_data(data, 2, time_len)
+			unshift_data(data, 3, time_len)
+
 			for (var i = 0; i < time_len; i++) {
 				label_list.push(data[0].data[i].summaryTime.slice(11,16));
 				data_list.push(data[1].data[i].score);
 				data100_list.push(data[0].data[i].score);
 				data5000_list.push(data[2].data[i].score);
 				data10000_list.push(data[3].data[i].score);
-				
 			}
+
+
+
 			now_compare_label[now_eid] = label_list.slice(0);
 			now_compare_data[now_eid] = {
 				data2500: data_list.slice(0),
