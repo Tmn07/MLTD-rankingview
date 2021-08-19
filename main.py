@@ -4,6 +4,9 @@ from bs4 import BeautifulSoup
 from os import path
 from getEventData import get_eventdata
 
+import re
+
+
 from log import *
 
 
@@ -25,20 +28,21 @@ def get_events(getLast=False,upload=False):
             pst_event_type = [3,4,10,11,12,13]
 
             for e in data:
+                # todo: 今后可以考虑改成正则表达式匹配
                 if e['type'] == 3:
-                    e_name = e['name'][12:-1]
+                    e_name = e['name'].split("～")[-2]
                     e_theater.append({"id": e['id'], "name": e_name})
                 if e['type'] == 4:
-                    e_name = e['name'][11:-1]
+                    e_name = e['name'].split("～")[-2]
                     e_tour.append({"id": e['id'], "name": e_name})
                 if e['type'] == 11:
-                    e_name = e['name'][12:-1]
+                    e_name = e['name'].split("～")[-2]
                     e_tune.append({"id": e['id'], "name": e_name})
                 if e['type'] == 10 or e['type'] == 12:
-                    e_name = e['name'][20:-1]
+                    e_name = e['name'].split("～")[-2]
                     e_twin.append({"id": e['id'], "name": e_name})
                 if e['type'] ==13:
-                    e_name = e['name'][20:-1]
+                    e_name = e['name'].split("～")[-2]
                     e_tail.append({"id": e['id'], "name": e_name})
 
                 if e['type'] in pst_event_type:
