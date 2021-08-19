@@ -25,11 +25,15 @@ def get_events(getLast=False,upload=False):
             pst_event_type = [3,4,10,11,12,13]
 
             for e in data:
+                # todo: 今后可以考虑改成正则表达式匹配
                 if e['type'] == 3:
                     e_name = e['name'][12:-1]
                     e_theater.append({"id": e['id'], "name": e_name})
                 if e['type'] == 4:
-                    e_name = e['name'][11:-1]
+                    if e['id'] > 197: # bingo
+                        e_name = e['name'][14:-1]
+                    else:
+                        e_name = e['name'][11:-1]
                     e_tour.append({"id": e['id'], "name": e_name})
                 if e['type'] == 11:
                     e_name = e['name'][12:-1]
