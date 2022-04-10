@@ -21,6 +21,7 @@ Public RESTful Application Programming Interface Series.
   - getEventData.py 爬取活动ranking数据相关
   - main.py 主程序入口，更新events.json，调用getEventData.py
   - log.py 日志维护
+  - count.py 活动人数统计脚本
 - 其他目录与数据
   - events.json 活动信息数据
   - data 活动数据目录

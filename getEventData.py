@@ -121,28 +121,30 @@ def get_eventdata(eid = "108", borders=[100,2500,5000,10000], ddir='data/', uplo
     #         print(upload_info)
 
 
+def get_all_eventdata():
+    pst_event_type = [3,4,10,11,12,13]
+    pst_newid = 32
+    ddir = "data/"
+    if not path.exists(ddir):
+        mkdir(ddir)
+    
+    url = "https://api.matsurihi.me/mltd/v1/events"
+    r = requests.get(url)
+    data = r.json()
+    for e in data:
+        if e['type'] in pst_event_type and e['id']>pst_newid:
+            get_eventdata(str(e['id']))
+
+        # old pst data lost
+        # if e['type'] in pst_event_type and e['id']<=pst_newid:
+        #     get_eventdata(str(e['id']), [100,2000,5000,10000])
 
 
 
 if __name__ == '__main__':
-
+    pass
     # single data
-    get_eventdata(eid = "196")
+    # get_eventdata(eid = "196")
 
     # all_data
-    # pst_event_type = [3,4,10,11,12]
-    # pst_newid = 32
-    # ddir = "data/"
-    # if not path.exists(ddir):
-    #     mkdir(ddir)
-    # 
-    # url = "https://api.matsurihi.me/mltd/v1/events"
-    # r = requests.get(url)
-    # data = r.json()
-    # for e in data:
-    #     if e['type'] in pst_event_type and e['id']>pst_newid:
-    #         get_eventdata(str(e['id']))
-
-    #     old pst data lost
-    #     if e['type'] in pst_event_type and e['id']<=pst_newid:
-    #         get_eventdata(str(e['id']), [100,2000,5000,10000])
+    # get_all_eventdata()

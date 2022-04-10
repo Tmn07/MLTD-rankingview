@@ -27,7 +27,7 @@
 		<div class="tune">Tune:</div>
 		<div class="tail">Tail:</div>
 		<div class="twin">TwinStage:</div>
-		<div class="now">Now:</div>
+		<div class="now">Current Event is </div>
 	</div>
 	<div class="borders">Rank: 
 		<button class="pure-button" id="zero">0档</button>
@@ -105,7 +105,8 @@
 
 	function id2name(eid){
 		// $('button#'+eid)
-		return $('button#'+eid).text();
+		ename = $('button#'+eid).text();
+		return ename.slice(0,-1);
 	}
 
 
@@ -492,17 +493,7 @@
 	window.onload = function() {
 		img_url = "../hime"
 
-		// if (Math.random()>0.5) {
-		// 	$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'2.png"  style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
-		// }
-		// else{
-		// 	$("body").append('<a href="https://chrome.google.com/webstore/detail/fmbdbinfkpiajgbhlapkcnimdfaoaoep" target="_black" ><img src="'+img_url+'1.png" style="position: fixed;right: 0px;top: 0px;height: 80px;"></a>')
-		// }
-		// 
-		// $("body").append('<img src="http://tmn07.com/31-00.png" style="position: fixed;right: 0px;top: 0px;height: 90px; width: 80px">')
-
 		$.get("./events.json",function(data){
-		// $.get("https://tmn07.com/rank_v1912/events.json",function(data){
 
 			theater_lastid = data[0][data[0].length-1]['id'];
 			tour_lastid = data[1][data[1].length-1]['id'];
@@ -513,33 +504,35 @@
 			lastids = [theater_lastid,tour_lastid,tune_lastid,twin_lastid,tail_lastid];
 			now_eid = Math.max(...lastids);
 			now_type = lastids.indexOf(now_eid);
-
+			type_names= ['Theater', 'Tour', 'Tune', 'Twin', 'Tail'];
+			now_type_name = type_names[now_type];
 			now_name = data[now_type][data[now_type].length-1]['name'];
-
-			$(".now").append(" <button class='pure-button' id='"+ String(now_eid) +"' style='color: rgb(90, 191, 183);'>"+now_name+"</button>");
+			now_duration = data[now_type][data[now_type].length-1]['duration'];
+			$(".now").append("<b>"+now_type_name+"</b>: ")
+			$(".now").append("<button class='pure-button' id='"+ String(now_eid) +"' style='color: rgb(90, 191, 183);'>"+now_name+"<sup>"+now_duration+"</sup></button>");
 
 			now_compare_eidlist = [String(now_eid)];
 
 			// console.log(data)
 			for(var ind in data[0]){
 				if (data[0][ind].id==now_eid) {break}
-				$(".theater").append(" <button class='pure-button' id='"+ data[0][ind].id +"'>"+data[0][ind].name+"</button>");				
+				$(".theater").append(" <button class='pure-button' id='"+ data[0][ind].id +"'>"+data[0][ind].name+"<sup>"+data[0][ind].duration+"</sup></button>");
 			}
 			for(var ind in data[1]){
 				if (data[1][ind].id==now_eid) {break}
-				$(".tour").append(" <button class='pure-button' id='"+ data[1][ind].id +"'>"+data[1][ind].name+"</button>");
+				$(".tour").append(" <button class='pure-button' id='"+ data[1][ind].id +"'>"+data[1][ind].name+"<sup>"+data[1][ind].duration+"</sup></button>");
 			}
 			for(var ind in data[2]){
 				if (data[2][ind].id==now_eid) {break}
-				$(".tune").append(" <button class='pure-button' id='"+ data[2][ind].id +"'>"+data[2][ind].name+"</button>");
+				$(".tune").append(" <button class='pure-button' id='"+ data[2][ind].id +"'>"+data[2][ind].name+"<sup>"+data[2][ind].duration+"</sup></button>");
 			}
 			for(var ind in data[3]){
 				if (data[3][ind].id==now_eid) {break}
-				$(".twin").append(" <button class='pure-button' id='"+ data[3][ind].id +"'>"+data[3][ind].name+"</button>");
+				$(".twin").append(" <button class='pure-button' id='"+ data[3][ind].id +"'>"+data[3][ind].name+"<sup>"+data[3][ind].duration+"</sup></button>");
 			}
 			for(var ind in data[4]){
 				if (data[4][ind].id==now_eid) {break}
-				$(".tail").append(" <button class='pure-button' id='"+ data[4][ind].id +"'>"+data[4][ind].name+"</button>");
+				$(".tail").append(" <button class='pure-button' id='"+ data[4][ind].id +"'>"+data[4][ind].name+"<sup>"+data[4][ind].duration+"</sup></button>");
 			}
 
 			$("#pst button").click(function(){

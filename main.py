@@ -1,14 +1,18 @@
 # coding=utf-8
 import requests, json
-from bs4 import BeautifulSoup
 from os import path
+import datetime
+
 from getEventData import get_eventdata
-
-import re
-
-
 from log import *
 
+def getDuration(e):
+    str_p0 = e['schedule']['beginDate'][:10]
+    date_p0 = datetime.datetime.strptime(str_p0,'%Y-%m-%d').date()
+    str_p = e['schedule']['endDate'][:10]
+    date_p = datetime.datetime.strptime(str_p,'%Y-%m-%d').date()
+    days = (date_p-date_p0).days
+    return days
 
 def get_events(getLast=False,upload=False):
     url = "https://api.matsurihi.me/mltd/v1/events"
@@ -31,19 +35,19 @@ def get_events(getLast=False,upload=False):
                 # todo: 今后可以考虑改成正则表达式匹配
                 if e['type'] == 3:
                     e_name = e['name'].split("～")[-2]
-                    e_theater.append({"id": e['id'], "name": e_name})
+                    e_theater.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
                 if e['type'] == 4:
                     e_name = e['name'].split("～")[-2]
-                    e_tour.append({"id": e['id'], "name": e_name})
+                    e_tour.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
                 if e['type'] == 11:
                     e_name = e['name'].split("～")[-2]
-                    e_tune.append({"id": e['id'], "name": e_name})
+                    e_tune.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
                 if e['type'] == 10 or e['type'] == 12:
                     e_name = e['name'].split("～")[-2]
-                    e_twin.append({"id": e['id'], "name": e_name})
+                    e_twin.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
                 if e['type'] ==13:
                     e_name = e['name'].split("～")[-2]
-                    e_tail.append({"id": e['id'], "name": e_name})
+                    e_tail.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
 
                 if e['type'] in pst_event_type:
                     last = e['id']
@@ -75,6 +79,6 @@ def get_events(getLast=False,upload=False):
 
 if __name__ == '__main__':
     # 只更新events.json
-    # get_events(False,False)
+    get_events(False,False)
     # 线上部署，检查上一个活动数据是否保存
-    get_events(True,False)
+    # get_events(True,False)
