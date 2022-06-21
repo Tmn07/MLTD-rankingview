@@ -33,8 +33,8 @@ Public RESTful Application Programming Interface Series.
 
 - [ ] 优化界面(时间提醒？)
 - [x] ~~爬取数据后自动上传cdn~~
-- [x] 时间对齐（因为有部分漏的数据）
-- [x] 服务器部署与自动更新
+- [ ] 时间对齐（因为有部分漏的数据）
+- [x] 服务器部署与自动更新 
 
 ## ~~API 接口~~
 
