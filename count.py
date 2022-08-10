@@ -19,7 +19,7 @@ if r.status_code == 200:
     enums = []
     etimes = []
     
-    pst_event_type = [3,4,5,10,11,12]
+    pst_event_type = [3,4,5,10,11,12,13,16]
     for e in data:
         if e['type'] in pst_event_type:
             eid = e['id']

@@ -79,6 +79,8 @@ def get_events(getLast=False,upload=False):
 
 if __name__ == '__main__':
     # 只更新events.json
-    get_events(False,False)
+    # get_events(False,False)
     # 线上部署，检查上一个活动数据是否保存
-    # get_events(True,False)
+    get_events(True,False)
+
+    # get_eventdata(str(229))
