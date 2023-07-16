@@ -27,6 +27,7 @@
 		<div class="tune">Tune:</div>
 		<div class="tail">Tail:</div>
 		<div class="twin">TwinStage:</div>
+		<div class="trust">Trust:</div>
 		<div class="now">Current Event is </div>
 	</div>
 	<div class="borders">Rank: 
@@ -500,11 +501,12 @@
 			tune_lastid = data[2][data[2].length-1]['id'];
 			twin_lastid = data[3][data[3].length-1]['id'];
 			tail_lastid = data[4][data[4].length-1]['id'];
+			trust_lastid = data[5][data[5].length-1]['id'];
 
-			lastids = [theater_lastid,tour_lastid,tune_lastid,twin_lastid,tail_lastid];
+			lastids = [theater_lastid,tour_lastid,tune_lastid,twin_lastid,tail_lastid,trust_lastid];
 			now_eid = Math.max(...lastids);
 			now_type = lastids.indexOf(now_eid);
-			type_names= ['Theater', 'Tour', 'Tune', 'Twin', 'Tail'];
+			type_names= ['Theater', 'Tour', 'Tune', 'Twin', 'Tail', 'Trust'];
 			now_type_name = type_names[now_type];
 			now_name = data[now_type][data[now_type].length-1]['name'];
 			now_duration = data[now_type][data[now_type].length-1]['duration'];
@@ -533,6 +535,10 @@
 			for(var ind in data[4]){
 				if (data[4][ind].id==now_eid) {break}
 				$(".tail").append(" <button class='pure-button' id='"+ data[4][ind].id +"'>"+data[4][ind].name+"<sup>"+data[4][ind].duration+"</sup></button>");
+			}
+			for(var ind in data[5]){
+				if (data[5][ind].id==now_eid) {break}
+				$(".trust").append(" <button class='pure-button' id='"+ data[5][ind].id +"'>"+data[5][ind].name+"<sup>"+data[5][ind].duration+"</sup></button>");
 			}
 
 			$("#pst button").click(function(){

@@ -26,16 +26,18 @@ def get_events(getLast=False,upload=False):
             e_tune = []
             e_twin = []
             e_tail = []
+            e_trust = []
             
             last = -1
             ddir = "data/"
             pst_event_type = [3,4,10,11,12,13]
-
             for e in data:
-                # todo: 今后可以考虑改成正则表达式匹配
                 if e['type'] == 3:
                     e_name = e['name'].split("～")[-2]
-                    e_theater.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
+                    if "トラスト" in e['name']:
+                        e_trust.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
+                    else:
+                        e_theater.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
                 if e['type'] == 4:
                     e_name = e['name'].split("～")[-2]
                     e_tour.append({"id": e['id'], "name": e_name, "duration": getDuration(e)})
@@ -58,7 +60,7 @@ def get_events(getLast=False,upload=False):
                 if (e['type'] not in pst_event_type) and (not path.exists(ddir+str(last)+'.json')):
                     get_eventdata(str(last))
 
-            e_data = [e_theater, e_tour, e_tune, e_twin, e_tail]
+            e_data = [e_theater, e_tour, e_tune, e_twin, e_tail, e_trust]
             with open('events.json', 'w') as f:
                 json.dump(e_data ,f)
                 logging.info("events.json update")
